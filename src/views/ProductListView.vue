@@ -20,9 +20,10 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        products.value = await repository.getAllProducts();
-      } catch (e) {
-        error.value = (e as Error).message;
+        const response = await repository.getAllProducts();
+        products.value = response;
+      } catch (e: any) {
+        error.value = e.message;
       } finally {
         loading.value = false;
       }
