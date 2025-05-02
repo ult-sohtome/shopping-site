@@ -3,6 +3,7 @@ import { ref, onMounted, defineComponent } from 'vue';
 import type { Product } from '@/interfaces/ProductRepository';
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'ProductListView',
@@ -11,6 +12,11 @@ export default defineComponent({
     const loading = ref(true);
     const error = ref<string | null>(null);
     const repository = new ApiProductRepository();
+    const router = useRouter();
+
+    const handleDetailClick = (productId: number) => {
+      router.push(`/product/${productId}`);
+    }
 
     onMounted(async () => {
       try {
@@ -27,6 +33,7 @@ export default defineComponent({
       loading,
       error,
       convertToYen,
+      handleDetailClick,
     }
   }
 });
@@ -42,7 +49,7 @@ export default defineComponent({
         <img :src="product.image" alt="商品画像" width="50" />
         <h2>{{ product.title }}</h2>
         <p>価格: {{ convertToYen(product.price).toLocaleString() }}円</p>
-        <button>詳細を見る</button>
+        <button @click="handleDetailClick(product.id)">詳細を見る</button>
       </div>
     </div>
   </main>
