@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ref, onMounted, defineComponent, type PropType } from 'vue';
-import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
+import type { Product, ProductRepositoryInterface, ProductWithYen } from '@/interfaces/ProductRepositoryInterface';
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
@@ -15,7 +15,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const products = ref<Product[]>([]);
+    const products = ref<ProductWithYen[]>([]);
     const loading = ref(true);
     const error = ref<string | null>(null);
     const router = useRouter();
@@ -27,7 +27,13 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const response = await props.productRepository.getAllProducts();
-        products.value = response;
+        const converted = await Promise.all(
+          response.map(async (product): Promise<ProductWithYen> => ({
+            ...product,
+            priceInYen: await convertToYen(product.price),
+          }))
+        );
+        products.value = converted;
       } catch (e: any) {
         error.value = e.message;
       } finally {
@@ -55,7 +61,7 @@ export default defineComponent({
       <div v-for="product in products" :key="product.id" class="product-card">
         <img :src="product.image" alt="商品画像" width="50" />
         <h2>{{ product.title }}</h2>
-        <p>価格: {{ convertToYen(product.price).toLocaleString() }}円</p>
+        <p>価格: {{ product.priceInYen.toLocaleString() }}円</p>
         <button @click="handleDetailClick(product.id)">詳細を見る</button>
       </div>
     </div>

@@ -10,3 +10,7 @@ export interface Product {
 export interface ProductRepositoryInterface {
   getAllProducts(): Promise<Product[]>;
 }
+
+export type ProductWithYen = Product & {
+  priceInYen: number;
+};
