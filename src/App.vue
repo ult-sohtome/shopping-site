@@ -16,7 +16,6 @@ export default defineComponent({
     <div class="wrapper">
       <nav>
         <RouterLink to="/">商品一覧</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
   </header>

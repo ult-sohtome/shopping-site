@@ -1,6 +1,6 @@
-import type { Product, ProductRepository } from '../interfaces/ProductRepository';
+import type { Product, ProductRepositoryInterface } from '../interfaces/ProductRepositoryInterface';
 
-export class ApiProductRepository implements ProductRepository {
+export class ApiProductRepository implements ProductRepositoryInterface {
   async getAllProducts(): Promise<Product[]> {
       const response = await fetch('https://fakestoreapi.com/products');
       if (!response.ok) {

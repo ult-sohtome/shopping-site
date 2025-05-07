@@ -7,6 +7,6 @@ export interface Product {
   image: string;
 }
 
-export interface ProductRepository {
+export interface ProductRepositoryInterface {
   getAllProducts(): Promise<Product[]>;
 }

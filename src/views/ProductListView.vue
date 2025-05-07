@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ref, onMounted, defineComponent } from 'vue';
-import type { Product } from '@/interfaces/ProductRepository';
+import type { Product } from '@/interfaces/ProductRepositoryInterface';
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
