@@ -1,17 +1,23 @@
 <script lang="ts">
-import { ref, onMounted, defineComponent } from 'vue';
-import type { Product } from '@/interfaces/ProductRepositoryInterface';
+import { ref, onMounted, defineComponent, type PropType } from 'vue';
+import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'ProductListView',
-  setup() {
+  props: {
+    productRepository: {
+      type: Object as PropType<ProductRepositoryInterface>,
+      required: false,
+      default: () => new ApiProductRepository(),
+    }
+  },
+  setup(props) {
     const products = ref<Product[]>([]);
     const loading = ref(true);
     const error = ref<string | null>(null);
-    const repository = new ApiProductRepository();
     const router = useRouter();
 
     const handleDetailClick = (productId: number) => {
@@ -20,7 +26,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        const response = await repository.getAllProducts();
+        const response = await props.productRepository.getAllProducts();
         products.value = response;
       } catch (e: any) {
         error.value = e.message;
