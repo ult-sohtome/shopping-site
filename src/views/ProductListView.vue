@@ -4,6 +4,8 @@ import type { Product, ProductRepositoryInterface, ProductWithYen } from '@/inte
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
+import { ApiRateRepository } from '@/repositories/ApiRateRepository';
+import { useRateStore } from '@/stores/rate';
 
 export default defineComponent({
   name: 'ProductListView',
@@ -12,28 +14,33 @@ export default defineComponent({
       type: Object as PropType<ProductRepositoryInterface>,
       required: false,
       default: () => new ApiProductRepository(),
+    },
+    rateRepository: {
+      type: Object as PropType<ApiRateRepository>,
+      required: false,
+      default: () => new ApiRateRepository(),
     }
   },
   setup(props) {
-    const products = ref<ProductWithYen[]>([]);
+    const products = ref<Product[]>([]);
     const loading = ref(true);
     const error = ref<string | null>(null);
     const router = useRouter();
-
+    const rateStore = useRateStore();
+    const rate = ref<number>(0);
     const handleDetailClick = (productId: number) => {
       router.push(`/product/${productId}`);
     }
 
     onMounted(async () => {
       try {
+        await rateStore.initializeRate(props.rateRepository);
+        if (rateStore.jpyRate === null) {
+          throw new Error('JPYレートが取得できませんでした。');
+        }
+        rate.value = rateStore.jpyRate as number;
         const response = await props.productRepository.getAllProducts();
-        const converted = await Promise.all(
-          response.map(async (product): Promise<ProductWithYen> => ({
-            ...product,
-            priceInYen: await convertToYen(product.price),
-          }))
-        );
-        products.value = converted;
+        products.value = response;
       } catch (e: any) {
         error.value = e.message;
       } finally {
@@ -47,6 +54,7 @@ export default defineComponent({
       error,
       convertToYen,
       handleDetailClick,
+      rate,
     }
   }
 });
@@ -61,7 +69,7 @@ export default defineComponent({
       <div v-for="product in products" :key="product.id" class="product-card">
         <img :src="product.image" alt="商品画像" width="50" />
         <h2>{{ product.title }}</h2>
-        <p>価格: {{ product.priceInYen.toLocaleString() }}円</p>
+        <p>価格: {{ convertToYen(product.price, rate).toLocaleString() }}円</p>
         <button @click="handleDetailClick(product.id)">詳細を見る</button>
       </div>
     </div>
