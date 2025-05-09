@@ -27,14 +27,14 @@
   const loading = ref(true);
   const error = ref<string | null>(null);
   const rateStore = useRateStore();
+  const cartStore = useCartStore();
+  const purchaseHistoryStore = usePurchaseHistoryStore();
   const rate = ref<number>(0);
 
   const handleAddProductToCartClick = (product: Product) => {
-    const cartStore = useCartStore();
     cartStore.addProductToCart(product.id);
   }
   const handleBuyProductClick = (product: Product) => {
-    const purchaseHistoryStore = usePurchaseHistoryStore();
     purchaseHistoryStore.addPurchaseHistory(product, props.purchaseHistoryRepository);
   }
 

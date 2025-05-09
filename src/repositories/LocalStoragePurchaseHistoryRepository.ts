@@ -4,7 +4,7 @@ import type { Product } from '@/interfaces/ProductRepositoryInterface';
 export class LocalStoragePurchaseHistoryRepository implements PurchaseHistoryRepositoryInterface {
   private readonly storageKey = 'purchaseHistory';
 
-  async addPurchaseHistory(product: Product): Promise<void> {
+  addPurchaseHistory(product: Product): void {
     const purchaseHistory = this.getPurchaseHistory();
     purchaseHistory.push(product);
     localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistory));
