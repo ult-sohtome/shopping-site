@@ -35,7 +35,7 @@
   }
   const handleBuyProductClick = (product: Product) => {
     const purchaseHistoryStore = usePurchaseHistoryStore();
-    purchaseHistoryStore.addPurchaseHistory(product.id, props.purchaseHistoryRepository);
+    purchaseHistoryStore.addPurchaseHistory(product, props.purchaseHistoryRepository);
   }
 
   onMounted(async () => {

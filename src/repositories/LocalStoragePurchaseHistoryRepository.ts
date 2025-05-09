@@ -1,15 +1,16 @@
 import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
+import type { Product } from '@/interfaces/ProductRepositoryInterface';
 
 export class LocalStoragePurchaseHistoryRepository implements PurchaseHistoryRepositoryInterface {
   private readonly storageKey = 'purchaseHistory';
 
-  async addPurchaseHistory(productId: number): Promise<void> {
+  async addPurchaseHistory(product: Product): Promise<void> {
     const purchaseHistory = this.getPurchaseHistory();
-    purchaseHistory.push({ id: purchaseHistory.length + 1, productId });
+    purchaseHistory.push(product);
     localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistory));
   }
 
-  getPurchaseHistory(): Array<{ id: number; productId: number }> {
+  getPurchaseHistory(): Array<Product> {
     const history = localStorage.getItem(this.storageKey);
     return history ? JSON.parse(history) : [];
   }

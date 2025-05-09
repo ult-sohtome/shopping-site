@@ -1,11 +1,9 @@
 import { defineStore } from "pinia";
 import type { PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
+import type { Product } from "@/interfaces/ProductRepositoryInterface";
 
 type State = {
-  purchaseHistory: Array<{
-    id: number;
-    productId: number;
-  }>;
+  purchaseHistory: Array<Product>;
 };
 
 export const usePurchaseHistoryStore = defineStore("purchaseHistory", {
@@ -13,13 +11,10 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistory", {
     purchaseHistory: []
   }),
   actions: {
-    async addPurchaseHistory(productId: number, repository: PurchaseHistoryRepositoryInterface) {
-      this.purchaseHistory.push({
-        id: this.purchaseHistory.length + 1,
-        productId
-      });
+    async addPurchaseHistory(product: Product, repository: PurchaseHistoryRepositoryInterface) {
+      this.purchaseHistory.push(product);
 
-      await repository.addPurchaseHistory(productId);
+      await repository.addPurchaseHistory(product);
     }
   }
 });
