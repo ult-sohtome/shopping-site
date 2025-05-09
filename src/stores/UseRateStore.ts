@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia';
 import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
 
+type State = {
+  jpyRate: number | null;
+};
+
 export const useRateStore = defineStore('rate', {
-  state: () => ({
-    jpyRate: null as number | null
+  state: (): State => ({
+    jpyRate: null,
   }),
   actions: {
     async loadRateForYen(repository: RateRepositoryInterface) {
