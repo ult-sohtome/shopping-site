@@ -5,7 +5,7 @@ import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
 import { ApiRateRepository } from '@/repositories/ApiRateRepository';
-import { useRateStore } from '@/stores/rate';
+import { useRateStore } from '@/stores/UseRateStore';
 
 export default defineComponent({
   name: 'ProductListView',
@@ -38,7 +38,7 @@ export default defineComponent({
         if (rateStore.jpyRate === null) {
           throw new Error('JPYレートが取得できませんでした。');
         }
-        rate.value = rateStore.jpyRate as number;
+        rate.value = rateStore.jpyRate;
         const response = await props.productRepository.getAllProducts();
         products.value = response;
       } catch (e: any) {
