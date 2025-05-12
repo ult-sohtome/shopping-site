@@ -35,7 +35,7 @@
     cartStore.addProductToCart(product.id);
   }
   const handleBuyProductClick = (product: Product) => {
-    purchaseHistoryStore.addPurchaseHistory(product, props.purchaseHistoryRepository);
+    purchaseHistoryStore.addPurchaseHistory(product, rate.value, props.purchaseHistoryRepository);
   }
 
   onMounted(async () => {

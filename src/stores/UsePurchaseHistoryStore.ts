@@ -1,15 +1,6 @@
 import { defineStore } from "pinia";
-import type { PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
+import type { PurchaseProduct, PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
 import type { Product } from "@/interfaces/ProductRepositoryInterface";
-
-type PurchaseProduct = {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-};
 
 type State = {
   purchaseHistory: Array<PurchaseProduct>;
@@ -20,18 +11,31 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistory", {
     purchaseHistory: []
   }),
   actions: {
-    addPurchaseHistory(product: Product, repository: PurchaseHistoryRepositoryInterface) {
-      const purchaseProduct = {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        description: product.description,
-        category: product.category,
-        image: product.image
-      };
-      this.purchaseHistory.push(purchaseProduct);
-
-      repository.addPurchaseHistory(purchaseProduct);
+    addPurchaseHistory(product: Product, rate: number, repository: PurchaseHistoryRepositoryInterface) {
+      const nowDate: string = new Date().toISOString().split("T")[0];
+      const existingSameDateProduct: PurchaseProduct | undefined = this.purchaseHistory.find(purchasedProduct =>
+        purchasedProduct.product.id === product.id && purchasedProduct.purchasedAt === nowDate
+      );
+      if (existingSameDateProduct) {
+        existingSameDateProduct.quantity += 1;
+        repository.addPurchaseHistory(existingSameDateProduct);
+      } else {
+        const purchaseProduct: PurchaseProduct = {
+          product: {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            description: product.description,
+            category: product.category,
+            image: product.image
+          },
+          rate,
+          quantity: 1,
+          purchasedAt: new Date().toISOString().split("T")[0]
+        };
+        this.purchaseHistory.push(purchaseProduct);
+        repository.addPurchaseHistory(purchaseProduct);
+      }
     }
   }
 });
