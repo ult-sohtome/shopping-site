@@ -9,4 +9,5 @@ export interface Product {
 
 export interface ProductRepositoryInterface {
   getAllProducts(): Promise<Product[]>;
+  getProductById(id: number): Promise<Product | null>;
 }
