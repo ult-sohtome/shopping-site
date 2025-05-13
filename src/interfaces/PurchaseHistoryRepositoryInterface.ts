@@ -1,4 +1,4 @@
-export interface PurchaseProduct {
+export interface PurchaseHistory {
   productOrders: {
     product: {
       id: number;
@@ -15,5 +15,5 @@ export interface PurchaseProduct {
 }
 
 export interface PurchaseHistoryRepositoryInterface {
-  addPurchaseHistory(product: PurchaseProduct): void;
+  addPurchaseHistory(product: PurchaseHistory): void;
 }
