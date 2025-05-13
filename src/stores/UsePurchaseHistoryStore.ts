@@ -12,30 +12,25 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistory", {
   }),
   actions: {
     addPurchaseHistory(product: Product, rate: number, repository: PurchaseHistoryRepositoryInterface) {
-      const nowDate: string = new Date().toISOString().split("T")[0];
-      const existingSameDateProduct: PurchaseProduct | undefined = this.purchaseHistory.find(purchasedProduct =>
-        purchasedProduct.product.id === product.id && purchasedProduct.purchasedAt === nowDate
-      );
-      if (existingSameDateProduct) {
-        existingSameDateProduct.quantity += 1;
-        repository.addPurchaseHistory(existingSameDateProduct);
-      } else {
-        const purchaseProduct: PurchaseProduct = {
-          product: {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            description: product.description,
-            category: product.category,
-            image: product.image
-          },
-          rate,
-          quantity: 1,
-          purchasedAt: new Date().toISOString().split("T")[0]
-        };
-        this.purchaseHistory.push(purchaseProduct);
-        repository.addPurchaseHistory(purchaseProduct);
-      }
+      const purchaseProduct: PurchaseProduct = {
+        productOrders: [
+          { product: {
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              description: product.description,
+              category: product.category,
+              image: product.image
+            },
+            quantity: 1
+          }
+        ],
+        rate,
+        purchasedAt: new Date().toISOString()
+      };
+
+      this.purchaseHistory.push(purchaseProduct);
+      repository.addPurchaseHistory(purchaseProduct);
     }
   }
 });

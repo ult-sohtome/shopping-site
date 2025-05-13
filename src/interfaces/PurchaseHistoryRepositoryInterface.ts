@@ -1,14 +1,16 @@
 export interface PurchaseProduct {
-  product: {
-    id: number;
-    title: string;
-    price: number;
-    description: string;
-    category: string;
-    image: string;
-  },
+  productOrders: {
+    product: {
+      id: number;
+      title: string;
+      price: number;
+      description: string;
+      category: string;
+      image: string;
+    },
+    quantity: number
+  }[],
   rate: number,
-  quantity: number,
   purchasedAt: string
 }
 
