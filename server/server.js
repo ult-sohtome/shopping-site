@@ -1,5 +1,12 @@
+import { bootstrap } from 'global-agent';
+import dotenv from 'dotenv';
 import express from 'express';
 import { translate } from '@vitalets/google-translate-api';
+
+dotenv.config();
+if (process.env.USE_PROXY) {
+  bootstrap();
+}
 
 const app = express();
 app.use(express.json());
@@ -11,11 +18,10 @@ app.post('/api/translate', async (req, res) => {
   }
 
   try {
-    const result = await translate(text, to || 'ja');
+    const result = await translate(text, { to });
     res.json({ translatedText: result.text });
   } catch (err) {
-  console.error('翻訳エラー詳細:', err);
-  res.status(500).json({ error: '翻訳に失敗しました', detail: err.message });
+    res.status(500).json({ error: '翻訳に失敗しました', detail: err.message });
   }
 });
 
