@@ -95,10 +95,11 @@
       <br />
       <div>
         <h2>{{ product.title }}</h2>
-        <p>価格: {{ convertToYen(product.price, rate).toLocaleString() }}円</p>
-        <p>説明: {{ product.description }}</p>
-        <p>カテゴリ: {{ product.category }}</p>
+        <p>Price: {{ product.price }}$</p>
+        <p>Description: {{ product.description }}</p>
+        <p>Category: {{ product.category }}</p>
       </div>
+      <br />
       <div>
         <button @click="handleAddProductToCartClick(product)">カートに追加</button>
         <button @click="handleBuyProductClick(product)">購入</button>
