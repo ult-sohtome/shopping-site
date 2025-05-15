@@ -11,6 +11,8 @@
 
     ```shell
     npm install
+    cd server
+    npm install
     ```
 3. `.env`ファイルを`/server`に作成する
    - `.env.example`ファイルを参考に、プロジェクト直下に`.env`ファイルを作成する
