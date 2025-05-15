@@ -12,7 +12,7 @@
     ```shell
     npm install
     ```
-3. `.env`ファイルを作成する
+3. `.env`ファイルを`/server`に作成する
    - `.env.example`ファイルを参考に、プロジェクト直下に`.env`ファイルを作成する
    - PROXYを使用する場合：アドレスを記入し`USE_PROXY`を`true`にする
    - PROXYを使用しない場合：`USE_PROXY`を`false`にする
