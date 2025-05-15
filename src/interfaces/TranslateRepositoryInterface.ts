@@ -1,3 +1,3 @@
 export interface TranslateRepositoryInterface {
-  translateToJapanese(text: string): Promise<string>;
+  translateToJapanese(text: Array<string>): Promise<Array<string>>;
 }

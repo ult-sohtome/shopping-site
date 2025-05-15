@@ -56,15 +56,19 @@
         throw new Error('商品が見つかりませんでした。');
       }
 
-      const translatedTitle = await props.translateRepository.translateToJapanese(product.value.title);
-      const translatedDescription = await props.translateRepository.translateToJapanese(product.value.description);
-      const translatedCategory = await props.translateRepository.translateToJapanese(product.value.category);
-
+      const translatedTexts: Array<string> | null = await props.translateRepository.translateToJapanese([
+        product.value.title,
+        product.value.description,
+        product.value.category
+      ]);
+      if (translatedTexts.length !== 3) {
+        throw new Error('翻訳に失敗しました。');
+      }
       translatedProduct.value = {
         ...product.value,
-        title: translatedTitle,
-        description: translatedDescription,
-        category: translatedCategory,
+        title: translatedTexts[0],
+        description: translatedTexts[1],
+        category: translatedTexts[2]
       };
 
     } catch (e: any) {
@@ -88,6 +92,7 @@
         <p>説明: {{ translatedProduct.description }}</p>
         <p>カテゴリ: {{ translatedProduct.category }}</p>
       </div>
+      <br />
       <div>
         <h2>{{ product.title }}</h2>
         <p>価格: {{ convertToYen(product.price, rate).toLocaleString() }}円</p>

@@ -12,14 +12,18 @@ const app = express();
 app.use(express.json());
 
 app.post('/api/translate', async (req, res) => {
-  const { text, to } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'textが必要です' });
+  const { texts, to } = req.body;
+  if (!texts || !to) {
+    return res.status(400).json({ error: '翻訳するための情報が不足しています' });
   }
-
   try {
-    const result = await translate(text, { to });
-    res.json({ translatedText: result.text });
+    const translatedTexts = await Promise.all(
+      texts.map(async (text) => {
+        const result = await translate(text, { to });
+        return result.text;
+      })
+    );
+    res.json({ translatedTexts });
   } catch (err) {
     res.status(500).json({ error: '翻訳に失敗しました', detail: err.message });
   }
