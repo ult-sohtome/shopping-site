@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<{
       rate.value = rateStore.jpyRate;
 
       cartItems.value = await Promise.all(
-        cartStore.getAllProductToCart().map(async (item) => {
+        cartStore.cartItems.map(async (item) => {
           const product: Product | null = await props.productRepository.getProductById(item.productId);
           if (product === null) {
             throw new Error('カート内の商品情報が得られませんでした。');
