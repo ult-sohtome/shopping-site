@@ -7,6 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
     <div class="wrapper">
       <nav>
         <RouterLink to="/">商品一覧</RouterLink>
+        <RouterLink to="/cart">カート一覧</RouterLink>
       </nav>
     </div>
   </header>
