@@ -67,7 +67,14 @@ const props = withDefaults(defineProps<{
             throw new Error('カート内の商品情報が得られませんでした。');
           }
           return {
-            product,
+            product: {
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              description: product.description,
+              category: product.category,
+              image: product.image
+            },
             quantity: item.quantity
           };
         })
