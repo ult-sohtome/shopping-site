@@ -32,12 +32,14 @@ const props = withDefaults(defineProps<{
   const purchaseHistoryStore = usePurchaseHistoryStore();
   const loading = ref(true);
   const error = ref<string | null>(null);
-  const rate = ref<number>(0);
   const cartItems = ref<Array<ProductEntry>>([]);
   
   const totalPrice = computed(() => {
     return cartItems.value.reduce((total, item) => {
-      return total + convertToYen(item.product.price, rate.value) * item.quantity;
+      if (rateStore.jpyRate === null) {
+        throw new Error('JPYレートが取得できませんでした。');
+      }
+      return total + convertToYen(item.product.price, rateStore.jpyRate) * item.quantity;
     }, 0);
   });
 
@@ -47,7 +49,10 @@ const props = withDefaults(defineProps<{
   }
 
   const handleBuyAllProductFromCartClick = () => {
-    purchaseHistoryStore.addPurchareHistoryFromCart(cartItems.value, rate.value, props.purchaseHistoryRepository);
+    if (rateStore.jpyRate === null) {
+      throw new Error('JPYレートが取得できませんでした。');
+    }
+    purchaseHistoryStore.addPurchareHistoryFromCart(cartItems.value, rateStore.jpyRate, props.purchaseHistoryRepository);
     cartStore.clearCart();
     cartItems.value = [];
   }
@@ -58,7 +63,6 @@ const props = withDefaults(defineProps<{
       if (rateStore.jpyRate === null) {
         throw new Error('JPYレートが取得できませんでした。');
       }
-      rate.value = rateStore.jpyRate;
 
       cartItems.value = await Promise.all(
         cartStore.cartItems.map(async (item) => {
@@ -98,7 +102,7 @@ const props = withDefaults(defineProps<{
         <img :src="item.product.image" alt="商品画像" width="100"/>
         <div class="cart-item-details">
           <h2>{{ item.product.title }}</h2>
-          <p>Price: {{ convertToYen(item.product.price, rate).toLocaleString() }}円</p>
+          <p v-if="rateStore.jpyRate">Price: {{ convertToYen(item.product.price, rateStore.jpyRate).toLocaleString() }}円</p>
           <p>Quantity: {{ item.quantity }}</p>
           <button @click="handleRemoveProductFromCartClick(item.product.id)">削除</button>
         </div>
