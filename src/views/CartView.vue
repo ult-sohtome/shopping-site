@@ -96,7 +96,7 @@ const props = withDefaults(defineProps<{
         <img :src="item.product.image" alt="商品画像" width="100"/>
         <div class="cart-item-details">
           <h2>{{ item.product.title }}</h2>
-          <p v-if="rateStore.jpyRate">Price: {{ convertToYen(item.product.price, rateStore.jpyRate).toLocaleString() }}円</p>
+          <p>Price: {{ convertToYen(item.product.price, rateStore.formattedRate).toLocaleString() }}円</p>
           <p>Quantity: {{ item.quantity }}</p>
           <button @click="handleRemoveProductFromCartClick(item.product.id)">削除</button>
         </div>
