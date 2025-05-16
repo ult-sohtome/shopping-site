@@ -16,6 +16,15 @@ export const useCartStore = defineStore('cart', {
       } else {
         this.cartItems.push({ productId, quantity: 1 });
       }
+    },
+    removeProductFromCart(productId: number) {
+      const index = this.cartItems.findIndex(item => item.productId === productId);
+      if (index !== -1) {
+        this.cartItems.splice(index, 1);
+      }
+    },
+    clearCart() {
+      this.cartItems = [];
     }
   }
 });

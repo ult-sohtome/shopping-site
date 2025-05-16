@@ -35,9 +35,25 @@
   const purchaseHistoryStore = usePurchaseHistoryStore();
   const rate = ref<number>(0);
   const translatedProduct = ref<Product | null>(null);
+  const showToast = ref(false);
+  const toastMessage = ref('');
+  const toastX = ref(0);
+  const toastY = ref(0);
 
-  const handleAddProductToCartClick = (product: Product) => {
+  const showAddToCartToast = (message: string, x: number, y: number) => {
+    toastMessage.value = message;
+    toastX.value = x;
+    toastY.value = y;
+    showToast.value = true;
+    setTimeout(() => {
+      showToast.value = false;
+    }, 1000);
+  }
+
+  const handleAddProductToCartClick = (product: Product | null, event: MouseEvent) => {
+    if (!product) return;
     cartStore.addProductToCart(product.id);
+    showAddToCartToast("カートに追加しました", event.clientX, event.clientY);
   }
   const handleBuyProductClick = (product: Product) => {
     purchaseHistoryStore.addPurchaseHistory(product, rate.value, props.purchaseHistoryRepository);
@@ -101,10 +117,26 @@
       </div>
       <br />
       <div>
-        <button @click="handleAddProductToCartClick(product)">カートに追加</button>
+        <button @click="event => handleAddProductToCartClick(product, event)">カートに追加</button>
         <button @click="handleBuyProductClick(product)">購入</button>
       </div>
     </div>
     <div v-else class="message">商品が見つかりませんでした。</div>
+    <div v-if="showToast" class="toast" :style="{ top: toastY + 10 + 'px', left: toastX + 'px' }">{{ toastMessage }}</div>
   </main>
 </template>
+
+<style scoped>
+  .toast {
+    position: fixed;
+    background-color: #4caf50;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+</style>

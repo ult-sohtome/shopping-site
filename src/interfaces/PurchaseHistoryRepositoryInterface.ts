@@ -1,15 +1,7 @@
+import type { ProductEntry } from "./ProductEntry";
+
 export interface PurchaseHistory {
-  productOrders: {
-    product: {
-      id: number;
-      title: string;
-      price: number;
-      description: string;
-      category: string;
-      image: string;
-    },
-    quantity: number
-  }[],
+  productOrders: Array<ProductEntry>,
   rate: number,
   purchasedAt: string
 }
