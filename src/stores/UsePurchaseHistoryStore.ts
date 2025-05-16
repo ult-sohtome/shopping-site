@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { PurchaseHistory, PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
 import type { Product } from "@/interfaces/ProductRepositoryInterface";
-import type { CartEntry } from "@/interfaces/CartRepositoryInterface";
+import type { ProductEntry } from "@/interfaces/ProductEntry";
 
 type State = {
   purchaseHistories: Array<PurchaseHistory>;
@@ -33,7 +33,7 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
       this.purchaseHistories.push(purchaseProduct);
       repository.addPurchaseHistory(purchaseProduct);
     },
-    addPurchareHistoryToCart(cartItems: Array<CartEntry>, rate: number, repository: PurchaseHistoryRepositoryInterface) {
+    addPurchareHistoryFromCart(cartItems: Array<ProductEntry>, rate: number, repository: PurchaseHistoryRepositoryInterface) {
       const purchaseProduct: PurchaseHistory = {
         productOrders: cartItems.map(item => ({
           product: item.product,

@@ -12,7 +12,7 @@
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
   import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
   import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
-  import type { CartEntry } from '@/interfaces/CartRepositoryInterface';
+  import type { ProductEntry } from '@/interfaces/ProductEntry';
 
 
 const props = withDefaults(defineProps<{
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<{
   const loading = ref(true);
   const error = ref<string | null>(null);
   const rate = ref<number>(0);
-  const cartItems = ref<Array<CartEntry>>([]);
+  const cartItems = ref<Array<ProductEntry>>([]);
   
   const totalPrice = computed(() => {
     return cartItems.value.reduce((total, item) => {
@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<{
   }
 
   const handleBuyAllProductFromCartClick = () => {
-    purchaseHistoryStore.addPurchareHistoryToCart(cartItems.value, rate.value, props.purchaseHistoryRepository);
+    purchaseHistoryStore.addPurchareHistoryFromCart(cartItems.value, rate.value, props.purchaseHistoryRepository);
     cartStore.clearCart();
     cartItems.value = [];
   }

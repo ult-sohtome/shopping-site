@@ -1,7 +1,7 @@
-import type { CartEntry } from "./CartRepositoryInterface";
+import type { ProductEntry } from "./ProductEntry";
 
 export interface PurchaseHistory {
-  productOrders: Array<CartEntry>,
+  productOrders: Array<ProductEntry>,
   rate: number,
   purchasedAt: string
 }
