@@ -77,9 +77,7 @@ const props = withDefaults(defineProps<{
       for (const storeItem of newCartStoreItems) {
         const existing: ProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
         if (existing) {
-          if (existing.quantity !== storeItem.quantity) {
-            existing.quantity = storeItem.quantity;
-          }
+          existing.quantity = storeItem.quantity;
           updatedCartItems.push(existing);
         } else {
           const product: Product | null = await props.productRepository.getProductById(storeItem.productId);
