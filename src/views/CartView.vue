@@ -33,13 +33,10 @@ const props = withDefaults(defineProps<{
   const loading = ref(true);
   const error = ref<string | null>(null);
   const cartItems = ref<Array<ProductEntry>>([]);
-  
+
   const totalPrice = computed(() => {
     return cartItems.value.reduce((total, item) => {
-      if (rateStore.jpyRate === null) {
-        throw new Error('JPYレートが取得できませんでした。');
-      }
-      return total + convertToYen(item.product.price, rateStore.jpyRate) * item.quantity;
+      return total + convertToYen(item.product.price, rateStore.formattedRate) * item.quantity;
     }, 0);
   });
 
@@ -49,10 +46,7 @@ const props = withDefaults(defineProps<{
   }
 
   const handleBuyAllProductFromCartClick = () => {
-    if (rateStore.jpyRate === null) {
-      throw new Error('JPYレートが取得できませんでした。');
-    }
-    purchaseHistoryStore.addPurchareHistoryFromCart(cartItems.value, rateStore.jpyRate, props.purchaseHistoryRepository);
+    purchaseHistoryStore.addPurchareHistoryFromCart(cartItems.value, rateStore.formattedRate, props.purchaseHistoryRepository);
     cartStore.clearCart();
     cartItems.value = [];
   }
@@ -102,7 +96,7 @@ const props = withDefaults(defineProps<{
         <img :src="item.product.image" alt="商品画像" width="100"/>
         <div class="cart-item-details">
           <h2>{{ item.product.title }}</h2>
-          <p v-if="rateStore.jpyRate">Price: {{ convertToYen(item.product.price, rateStore.jpyRate).toLocaleString() }}円</p>
+          <p>Price: {{ convertToYen(item.product.price, rateStore.formattedRate).toLocaleString() }}円</p>
           <p>Quantity: {{ item.quantity }}</p>
           <button @click="handleRemoveProductFromCartClick(item.product.id)">削除</button>
         </div>
