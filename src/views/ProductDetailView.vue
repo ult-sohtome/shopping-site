@@ -9,6 +9,7 @@
   import { convertToYen } from '@/utils/priceFormatter';
   import { useCartStore } from '@/stores/UseCartStore';
   import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
+  import { useToast } from '@/composables/useToast';
   import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
   import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
@@ -35,20 +36,14 @@
   const purchaseHistoryStore = usePurchaseHistoryStore();
   const rate = ref<number>(0);
   const translatedProduct = ref<Product | null>(null);
-  const showToast = ref(false);
-  const toastMessage = ref('');
-  const toastX = ref(0);
-  const toastY = ref(0);
-
-  const showAddToCartToast = (message: string, x: number, y: number) => {
-    toastMessage.value = message;
-    toastX.value = x;
-    toastY.value = y;
-    showToast.value = true;
-    setTimeout(() => {
-      showToast.value = false;
-    }, 1000);
-  }
+  const {
+    Toast,
+    showToast,
+    toastMessage,
+    toastX,
+    toastY,
+    showAddToCartToast
+  } = useToast();
 
   const handleAddProductToCartClick = (product: Product | null, event: MouseEvent) => {
     if (!product) return;
@@ -122,21 +117,12 @@
       </div>
     </div>
     <div v-else class="message">商品が見つかりませんでした。</div>
-    <div v-if="showToast" class="toast" :style="{ top: toastY + 10 + 'px', left: toastX + 'px' }">{{ toastMessage }}</div>
+    <Toast
+      :showToast="showToast"
+      :toastMessage="toastMessage"
+      :toastX="toastX"
+      :toastY="toastY"
+      @update:showToast="showToast = $event"
+    />
   </main>
 </template>
-
-<style scoped>
-  .toast {
-    position: fixed;
-    background-color: #4caf50;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    z-index: 9999;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-</style>
