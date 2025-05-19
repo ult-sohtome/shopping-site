@@ -3,7 +3,7 @@
   import { ApiProductRepository } from '@/repositories/ApiProductRepository';
   import { ApiRateRepository } from '@/repositories/ApiRateRepository';
   import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
-  import { ApiTranslateRepository } from '@/repositories/ApiTranslateRepository';
+  import { createTranslateRepository } from '@/factories/translateRepositoryFactory'
   import { useRateStore } from '@/stores/UseRateStore';
   import{ useRoute } from 'vue-router';
   import { convertToYen } from '@/utils/priceFormatter';
@@ -23,7 +23,7 @@
     productRepository: () => new ApiProductRepository(),
     rateRepository: () => new ApiRateRepository(),
     purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
-    translateRepository: () => new ApiTranslateRepository(),
+    translateRepository: () => createTranslateRepository(),
   });
 
   const route = useRoute();
@@ -67,7 +67,7 @@
       }
       rate.value = rateStore.jpyRate;
       const productId = Number(route.params.id);
-      product.value = await props.productRepository.getProductById(productId); 
+      product.value = await props.productRepository.getProductById(productId);
       if (product.value === null) {
         throw new Error('商品が見つかりませんでした。');
       }
