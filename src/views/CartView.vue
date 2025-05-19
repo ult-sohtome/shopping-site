@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue';
+  import { ref, onMounted, computed, watch } from 'vue';
   import { ApiProductRepository } from '@/repositories/ApiProductRepository';
   import { ApiRateRepository } from '@/repositories/ApiRateRepository';
   import { ApiTranslateRepository } from '@/repositories/ApiTranslateRepository';
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<{
   const loading = ref(true);
   const error = ref<string | null>(null);
   const cartItems = ref<Array<ProductEntry>>([]);
-  
+
   const totalPrice = computed(() => {
     return cartItems.value.reduce((total, item) => {
       if (rateStore.jpyRate === null) {
@@ -63,14 +63,30 @@ const props = withDefaults(defineProps<{
       if (rateStore.jpyRate === null) {
         throw new Error('JPYレートが取得できませんでした。');
       }
+    } catch (e: any) {
+      error.value = e.message;
+    } finally {
+      loading.value = false;
+    }
+  });
 
-      cartItems.value = await Promise.all(
-        cartStore.cartItems.map(async (item) => {
-          const product: Product | null = await props.productRepository.getProductById(item.productId);
+  watch(
+    () => [...cartStore.cartItems],
+    async newCartStoreItems => {
+      const updatedCartItems: Array<ProductEntry> = [];
+      for (const storeItem of newCartStoreItems) {
+        const existing: ProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
+        if (existing) {
+          if (existing.quantity !== storeItem.quantity) {
+            existing.quantity = storeItem.quantity;
+          }
+          updatedCartItems.push(existing);
+        } else {
+          const product: Product | null = await props.productRepository.getProductById(storeItem.productId);
           if (product === null) {
             throw new Error('カート内の商品情報が得られませんでした。');
           }
-          return {
+          updatedCartItems.push({
             product: {
               id: product.id,
               title: product.title,
@@ -79,16 +95,14 @@ const props = withDefaults(defineProps<{
               category: product.category,
               image: product.image
             },
-            quantity: item.quantity
-          };
-        })
-      );
-    } catch (e: any) {
-      error.value = e.message;
-    } finally {
-      loading.value = false;
-    }
-  });
+            quantity: storeItem.quantity
+          });
+        }
+      }
+      cartItems.value = updatedCartItems;
+    },
+    {immediate: true, deep: true}
+  );
 </script>
 
 <template>
