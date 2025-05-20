@@ -6,16 +6,29 @@
     toastMessage: string,
     toastX: number,
     toastY: number
+    triggerKey?: number | null
   }>();
   const emit = defineEmits(['update:showToast']);
-  
-  watch(() => props.showToast, (showToast) => {
-    if (showToast) {
-      setTimeout(() => {
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  watch(
+    () => [props.showToast, props.triggerKey],
+    ([showToast, triggerKey]) => {
+      if(!showToast)return
+      if(triggerKey == null){
+        setTimeout(() => {
+          emit('update:showToast', false);
+        }, 1000);
+        return
+      }
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
         emit('update:showToast', false);
+        timeoutId = null;
       }, 1000);
     }
-  });
+  );
 </script>
 
 <template>
