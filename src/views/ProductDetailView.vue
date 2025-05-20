@@ -10,7 +10,6 @@
   import { useCartStore } from '@/stores/UseCartStore';
   import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
   import Toast from '@/components/commom/Toast.vue';
-  import { useToastStore } from '@/stores/UseToastStore';
   import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
   import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
@@ -34,15 +33,25 @@
   const error = ref<string | null>(null);
   const rateStore = useRateStore();
   const cartStore = useCartStore();
-  const toastStore = useToastStore();
   const purchaseHistoryStore = usePurchaseHistoryStore();
   const rate = ref<number>(0);
   const translatedProduct = ref<Product | null>(null);
+  const showToast = ref(false);
+  const toastMessage = ref('');
+  const toastX = ref(0);
+  const toastY = ref(0);
+
+  const showCartToast = (message: string, x: number, y: number) => {
+    toastMessage.value = message;
+    toastX.value = x;
+    toastY.value = y;
+    showToast.value = true;
+  }
 
   const handleAddProductToCartClick = (product: Product | null, event: MouseEvent) => {
     if (!product) return;
     cartStore.addProductToCart(product.id);
-    toastStore.showCartToast("カートに追加しました", event.clientX, event.clientY);
+    showCartToast("カートに追加しました", event.clientX, event.clientY);
   }
   const handleBuyProductClick = (product: Product) => {
     purchaseHistoryStore.addPurchaseHistory(product, rate.value, props.purchaseHistoryRepository);
@@ -111,6 +120,11 @@
       </div>
     </div>
     <div v-else class="message">商品が見つかりませんでした。</div>
-    <Toast/>
+    <Toast
+      :toastMessage="toastMessage"
+      :toastX="toastX"
+      :toastY="toastY"
+      v-model:showToast="showToast"
+    />
   </main>
 </template>
