@@ -9,6 +9,7 @@
   import { convertToYen } from '@/utils/priceFormatter';
   import { useCartStore } from '@/stores/UseCartStore';
   import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
+  import Toast from '@/components/commom/Toast.vue';
   import { useToast } from '@/composables/useToast';
   import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
@@ -37,7 +38,6 @@
   const rate = ref<number>(0);
   const translatedProduct = ref<Product | null>(null);
   const {
-    Toast,
     showToast,
     toastMessage,
     toastX,

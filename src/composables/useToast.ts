@@ -1,5 +1,4 @@
 import { ref } from 'vue';
-import Toast from '@/components/commom/Toast.vue';
 
 export function useToast() {
   const showToast = ref(false);
@@ -18,7 +17,6 @@ export function useToast() {
   };
 
   return {
-    Toast,
     toastMessage,
     toastX,
     toastY,
