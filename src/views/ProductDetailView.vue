@@ -40,12 +40,14 @@
   const toastMessage = ref('');
   const toastX = ref(0);
   const toastY = ref(0);
+  const triggerKey = ref<number | null>(null);
 
   const showCartToast = (message: string, x: number, y: number) => {
     toastMessage.value = message;
     toastX.value = x;
     toastY.value = y;
     showToast.value = true;
+    triggerKey.value = Date.now();
   }
 
   const handleAddProductToCartClick = (product: Product | null, event: MouseEvent) => {
@@ -125,6 +127,7 @@
       :toastX="toastX"
       :toastY="toastY"
       v-model:showToast="showToast"
+      :triggerKey="triggerKey"
     />
   </main>
 </template>
