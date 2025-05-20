@@ -1,29 +1,15 @@
 <script setup lang="ts">
-  import { watch } from 'vue';
+  import { useToastStore } from '@/stores/UseToastStore';
 
-  const props = defineProps<{
-    showToast: boolean,
-    toastMessage: string,
-    toastX: number,
-    toastY: number
-  }>();
-  const emit = defineEmits(['update:showToast']);
-
-  watch(() => props.showToast, (val) => {
-    if (val) {
-      setTimeout(() => {
-        emit('update:showToast', false);
-      }, 1000);
-    }
-  });
+  const toastStore = useToastStore();
 </script>
 
 <template>
-  <div v-if="showToast"
+  <div v-if="toastStore.showToast"
    class="toast"
-   :style="{ top: toastY + 10 + 'px', left: toastX + 'px' }"
+   :style="{ top: toastStore.toastY + 10 + 'px', left: toastStore.toastX + 'px' }"
   >
-    {{ toastMessage }}
+    {{ toastStore.toastMessage }}
   </div>
 </template>
 
