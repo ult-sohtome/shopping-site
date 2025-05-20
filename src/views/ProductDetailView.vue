@@ -118,11 +118,10 @@
     </div>
     <div v-else class="message">商品が見つかりませんでした。</div>
     <Toast
-      :showToast="showToast"
       :toastMessage="toastMessage"
       :toastX="toastX"
       :toastY="toastY"
-      @update:showToast="showToast = $event"
+      v-model:showToast="showToast"
     />
   </main>
 </template>
