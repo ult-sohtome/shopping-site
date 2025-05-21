@@ -45,6 +45,10 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
 
       this.purchaseHistories.push(purchaseProduct);
       repository.addPurchaseHistory(purchaseProduct);
+    },
+    initializePurchaseHistory(repository: PurchaseHistoryRepositoryInterface) {
+      const purchaseHistories = repository.getPurchaseHistories();
+      this.purchaseHistories = purchaseHistories;
     }
   }
 });

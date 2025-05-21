@@ -1,5 +1,21 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { onMounted } from 'vue'
+import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface'
+import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository'
+import { usePurchaseHistoryStore } from './stores/UsePurchaseHistoryStore'
+
+const props = withDefaults(defineProps<{
+  purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface
+}>(), {
+  purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
+})
+
+const purchaseHistoryStore = usePurchaseHistoryStore()
+
+onMounted(() => {
+  purchaseHistoryStore.initializePurchaseHistory(props.purchaseHistoryRepository);
+});
 </script>
 
 <template>
@@ -8,6 +24,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <RouterLink to="/">商品一覧</RouterLink>
         <RouterLink to="/cart">カート一覧</RouterLink>
+        <RouterLink to="/purchase-history">購入履歴</RouterLink>
       </nav>
     </div>
   </header>
