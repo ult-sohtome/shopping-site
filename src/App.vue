@@ -4,6 +4,7 @@ import { onMounted } from 'vue'
 import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface'
 import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository'
 import { usePurchaseHistoryStore } from './stores/UsePurchaseHistoryStore'
+import { runMigrations } from './migrations/runMigrations'
 
 const props = withDefaults(defineProps<{
   purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface
@@ -14,6 +15,7 @@ const props = withDefaults(defineProps<{
 const purchaseHistoryStore = usePurchaseHistoryStore()
 
 onMounted(() => {
+  runMigrations();
   purchaseHistoryStore.initializePurchaseHistory(props.purchaseHistoryRepository);
 });
 </script>

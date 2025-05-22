@@ -87,7 +87,8 @@ const props = withDefaults(defineProps<{
               category: product.category,
               image: product.image
             },
-            quantity: storeItem.quantity
+            quantity: storeItem.quantity,
+            deletedAt: null
           });
         }
       }

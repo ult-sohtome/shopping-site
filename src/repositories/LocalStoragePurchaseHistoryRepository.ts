@@ -13,4 +13,8 @@ export class LocalStoragePurchaseHistoryRepository implements PurchaseHistoryRep
     const history: string | null = localStorage.getItem(this.storageKey);
     return history ? JSON.parse(history) : [];
   }
+
+  getPurchaseHistoriesLocalStorageKey(): string {
+    return this.storageKey;
+  }
 }

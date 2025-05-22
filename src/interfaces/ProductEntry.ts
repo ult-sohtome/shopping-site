@@ -2,5 +2,6 @@ import type { Product } from "./ProductRepositoryInterface";
 
 export interface ProductEntry {
   product: Product,
-  quantity: number
+  quantity: number,
+  deletedAt: string | null
 }

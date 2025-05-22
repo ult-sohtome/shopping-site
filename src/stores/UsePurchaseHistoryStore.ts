@@ -23,7 +23,8 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
               category: product.category,
               image: product.image
             },
-            quantity: 1
+            quantity: 1,
+            deletedAt: null
           }
         ],
         rate,
@@ -37,7 +38,8 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
       const purchaseProduct: PurchaseHistory = {
         productOrders: cartItems.map(item => ({
           product: item.product,
-          quantity: item.quantity
+          quantity: item.quantity,
+          deletedAt: null
         })),
         rate,
         purchasedAt: new Date().toISOString()
