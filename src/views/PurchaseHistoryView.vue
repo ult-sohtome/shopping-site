@@ -27,10 +27,14 @@ const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): numb
 };
 
 const displayedHistories = computed<Array<PurchaseHistory>>(() => {
+  const sortedPurchaseHistories = [...purchaseHistoryStore.purchaseHistories].sort((a, b) => {
+    return new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime();
+  });
+
   if (showCanceled.value) {
-    return purchaseHistoryStore.purchaseHistories;
+    return sortedPurchaseHistories;
   }
-  return purchaseHistoryStore.purchaseHistories
+  return sortedPurchaseHistories
     .map(purchaseHistory => {
       const filteredProductOrders = purchaseHistory.productOrders.filter(productEntry => productEntry.deletedAt === null);
       return {
