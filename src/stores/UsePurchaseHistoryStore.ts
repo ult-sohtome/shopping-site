@@ -51,6 +51,26 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
     initializePurchaseHistory(repository: PurchaseHistoryRepositoryInterface) {
       const purchaseHistories = repository.getPurchaseHistories();
       this.purchaseHistories = purchaseHistories;
+    },
+    deletePurchased(purchasedAt: string, productEntry: ProductEntry, repository: PurchaseHistoryRepositoryInterface) {
+      const targetPurchaseHistory = this.purchaseHistories.find(purchaseHistory => purchaseHistory.purchasedAt === purchasedAt);
+
+      if (!targetPurchaseHistory) {
+        throw new Error("指定された商品の購入履歴が見つかりませんでした");
+      }
+
+      const targetProductEntry = targetPurchaseHistory.productOrders.find(entry =>
+        entry.product.id === productEntry.product.id &&
+        entry.quantity === productEntry.quantity &&
+        entry.deletedAt === null
+      );
+
+      if (!targetProductEntry) {
+        throw new Error("キャンセルする商品が見つかりませんでした");
+      }
+
+      targetProductEntry.deletedAt = new Date().toISOString();
+      repository.updatePurchaseHistories(this.purchaseHistories);
     }
   }
 });

@@ -1,23 +1,57 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
 import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
 import { convertToYen, formatDate } from '@/utils/priceFormatter';
+import type { PurchaseHistory, PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
 import type { ProductEntry } from '@/interfaces/ProductEntry';
 
+  const props = withDefaults(defineProps<{
+    purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface;
+  }>(), {
+    purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository()
+  });
+
 const purchaseHistoryStore = usePurchaseHistoryStore();
+const showCanceled = ref(false);
+
+const handleCancelProductClick = (purchasedAt: string, productEntry: ProductEntry) => {
+  if (productEntry.deletedAt !== null) return;
+  purchaseHistoryStore.deletePurchased(purchasedAt, productEntry, props.purchaseHistoryRepository);
+};
 
 const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): number => {
-  return productOrders.reduce((total, productEntry) => {
+  return productOrders.filter(productEntry => productEntry.deletedAt === null).reduce((total, productEntry) => {
     return total + convertToYen(productEntry.product.price, rate) * productEntry.quantity;
   }, 0);
 };
+
+const displayedHistories = computed<Array<PurchaseHistory>>(() => {
+  if (showCanceled.value) {
+    return purchaseHistoryStore.purchaseHistories;
+  }
+  return purchaseHistoryStore.purchaseHistories
+    .map(purchaseHistory => {
+      const filteredProductOrders = purchaseHistory.productOrders.filter(productEntry => productEntry.deletedAt === null);
+      return {
+        ...purchaseHistory,
+        productOrders: filteredProductOrders
+      };
+    })
+    .filter(purchaseHistory => purchaseHistory.productOrders.length > 0);
+});
 
 </script>
 
 <template>
   <div class="purchase-history">
     <h1>購入履歴</h1>
+    <div>
+      <label class="radio-label"><input type="radio" :value="false" v-model="showCanceled">通常の購入履歴</label>
+      <label><input type="radio" :value="true" v-model="showCanceled">キャンセルした購入商品も含めた購入履歴</label>
+    </div>
     <div class="purchase-history-list">
-      <div v-for="(purchaseHistory, historyIndex) in purchaseHistoryStore.purchaseHistories" :key="historyIndex" class="purchase-history-item">
+      <div v-for="(purchaseHistory, historyIndex) in displayedHistories" :key="historyIndex" class="purchase-history-item">
         <p>購入日時: {{ formatDate(purchaseHistory.purchasedAt) }}</p>
         <p>購入商品:</p>
         <ul>
@@ -25,6 +59,8 @@ const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): numb
             <p>商品名:{{ productEntry.product.title }}</p>
             <p>単価:{{ convertToYen(productEntry.product.price, purchaseHistory.rate).toLocaleString() }}円</p>
             <p>購入個数:{{ productEntry.quantity }}個</p>
+            <p v-if="productEntry.deletedAt">キャンセル日時:{{ formatDate(productEntry.deletedAt) }}</p>
+            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.purchasedAt, productEntry)">購入キャンセル</button>
           </li>
         </ul>
         <div class="border"></div>
@@ -35,6 +71,9 @@ const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): numb
 </template>
 
 <style scoped>
+  .radio-label {
+    margin-right: 20px;
+  }
   .purchase-history-item {
     margin: 1rem;
     padding: 1rem;
