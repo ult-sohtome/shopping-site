@@ -11,7 +11,7 @@ const migrations: {
     migrationFlagKey: 'is_purchase_history_migrated_20250521',
     migrate: () => new PurchaseHistoryMigration_20250521(purchaseHistoryRepository)
   }
-];
+] as const;
 
 export function runMigrations() {
   migrations.forEach(({ migrationFlagKey, migrate }) => {
