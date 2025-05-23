@@ -1,21 +1,22 @@
-import { LocalStoragePurchaseHistoryRepository } from "@/repositories/LocalStoragePurchaseHistoryRepository";
+import type { PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
 import type { PurchaseHistory } from "@/interfaces/PurchaseHistoryRepositoryInterface";
 import type { PurchasedProductEntry } from "@/interfaces/ProductEntry";
 
 export class PurchaseHistoryMigration_20250521 {
-  constructor() {
-    const localStoragePurchaseHistoriesKey: string = new LocalStoragePurchaseHistoryRepository().getPurchaseHistoriesLocalStorageKey();
-    this.migratePurchaseHistory(localStoragePurchaseHistoriesKey);
+  private purchaseHistoryRepository: PurchaseHistoryRepositoryInterface;
+
+  constructor(repository: PurchaseHistoryRepositoryInterface) {
+    this.purchaseHistoryRepository = repository;
+    this.migratePurchaseHistory();
   }
 
-  private migratePurchaseHistory(key: string) {
-    const localStorageData = localStorage.getItem(key);
-    if (!localStorageData) {
+  private migratePurchaseHistory() {
+    const purchaseHistories: Array<PurchaseHistory> = this.purchaseHistoryRepository.getPurchaseHistories();
+    if (!purchaseHistories) {
       throw new Error("購入履歴データが存在しません。");
     };
-    const purchaseHistories = JSON.parse(localStorageData);
 
-    const migratedPurchaseHistories = purchaseHistories.map((purchaseHistory: PurchaseHistory) => {
+    const migratedPurchaseHistories: Array<PurchaseHistory> = purchaseHistories.map((purchaseHistory: PurchaseHistory) => {
       const updatedProductOrders = purchaseHistory.productOrders.map((productEntry: PurchasedProductEntry) => ({
         ...productEntry,
         deletedAt: null,
@@ -28,6 +29,6 @@ export class PurchaseHistoryMigration_20250521 {
       };
     });
 
-    localStorage.setItem(key, JSON.stringify(migratedPurchaseHistories));
+    this.purchaseHistoryRepository.updatePurchaseHistories(migratedPurchaseHistories);
   }
 }

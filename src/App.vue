@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import { onMounted } from 'vue'
-import type { PurchaseHistory } from './interfaces/PurchaseHistoryRepositoryInterface'
+import type { PurchaseHistoryRepositoryInterface } from './interfaces/PurchaseHistoryRepositoryInterface'
 import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository'
 import { usePurchaseHistoryStore } from './stores/UsePurchaseHistoryStore'
 import { runMigrations } from './migrations/runMigrations'
 
-const purchaseHistoryStore = usePurchaseHistoryStore()
+const props = withDefaults(defineProps<{
+  purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface
+}>(), {
+  purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
+});
+
+const purchaseHistoryStore = usePurchaseHistoryStore();
 
 onMounted(() => {
-  runMigrations();
-  const purchaseHistories: Array<PurchaseHistory> = new LocalStoragePurchaseHistoryRepository().getPurchaseHistories();
-  purchaseHistoryStore.initializePurchaseHistory(purchaseHistories);
+  runMigrations(props.purchaseHistoryRepository);
+  purchaseHistoryStore.initializePurchaseHistory(props.purchaseHistoryRepository);
 });
 </script>
 

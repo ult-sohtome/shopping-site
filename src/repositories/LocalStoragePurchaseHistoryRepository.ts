@@ -14,10 +14,6 @@ export class LocalStoragePurchaseHistoryRepository implements PurchaseHistoryRep
     return histories ? JSON.parse(histories) : [];
   }
 
-  getPurchaseHistoriesLocalStorageKey(): string {
-    return this.storageKey;
-  }
-
   updatePurchaseHistories(purchaseHistories: Array<PurchaseHistory>) {
     localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistories));
   }
