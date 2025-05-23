@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue';
 import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
 import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
-import { convertToYen, formatDate } from '@/utils/priceFormatter';
+import { convertToYen } from '@/utils/priceFormatter';
+import { formatDate } from '@/utils/dateFormatter';
 import type { PurchaseHistory, PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
 import type { ProductEntry } from '@/interfaces/ProductEntry';
 
