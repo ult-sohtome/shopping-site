@@ -1,10 +1,11 @@
-import type { PurchaseHistoryRepositoryInterface } from "@/interfaces/PurchaseHistoryRepositoryInterface";
+import { LocalStoragePurchaseHistoryRepository } from "@/repositories/LocalStoragePurchaseHistoryRepository";
 import type { PurchaseHistory } from "@/interfaces/PurchaseHistoryRepositoryInterface";
 import type { ProductEntry } from "@/interfaces/ProductEntry";
 
 export class PurchaseHistoryMigration_20250521 {
-  constructor(repository: PurchaseHistoryRepositoryInterface) {
-    this.migratePurchaseHistory(repository.getPurchaseHistoriesLocalStorageKey());
+  constructor() {
+    const localStoragePurchaseHistoriesKey: string = new LocalStoragePurchaseHistoryRepository().getPurchaseHistoriesLocalStorageKey();
+    this.migratePurchaseHistory(localStoragePurchaseHistoriesKey);
   }
 
   private migratePurchaseHistory(key: string) {

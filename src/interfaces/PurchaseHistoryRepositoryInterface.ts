@@ -8,7 +8,5 @@ export interface PurchaseHistory {
 
 export interface PurchaseHistoryRepositoryInterface {
   addPurchaseHistory(product: PurchaseHistory): void;
-  getPurchaseHistories(): Array<PurchaseHistory>;
-  getPurchaseHistoriesLocalStorageKey(): string;
   updatePurchaseHistories(purchaseHistories: Array<PurchaseHistory>): void;
 }

@@ -48,8 +48,7 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
       this.purchaseHistories.push(purchaseProduct);
       repository.addPurchaseHistory(purchaseProduct);
     },
-    initializePurchaseHistory(repository: PurchaseHistoryRepositoryInterface) {
-      const purchaseHistories = repository.getPurchaseHistories();
+    initializePurchaseHistory(purchaseHistories: Array<PurchaseHistory>) {
       this.purchaseHistories = purchaseHistories;
     },
     deletePurchased(purchasedAt: string, productEntry: ProductEntry, repository: PurchaseHistoryRepositoryInterface) {

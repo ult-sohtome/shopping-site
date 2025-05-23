@@ -1,7 +1,4 @@
 import { PurchaseHistoryMigration_20250521 } from "./purchaseHistoryMigration_20250521";
-import { LocalStoragePurchaseHistoryRepository } from "@/repositories/LocalStoragePurchaseHistoryRepository";
-
-const purchaseHistoryRepository = new LocalStoragePurchaseHistoryRepository();
 
 const migrations: {
   migrationFlagKey: string;
@@ -9,7 +6,7 @@ const migrations: {
 }[] = [
   {
     migrationFlagKey: 'is_purchase_history_migrated_20250521',
-    migrate: () => new PurchaseHistoryMigration_20250521(purchaseHistoryRepository)
+    migrate: () => new PurchaseHistoryMigration_20250521()
   }
 ] as const;
 
