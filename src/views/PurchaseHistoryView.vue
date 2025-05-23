@@ -5,7 +5,7 @@ import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
 import { convertToYen } from '@/utils/priceFormatter';
 import { formatDate } from '@/utils/dateFormatter';
 import type { PurchaseHistory, PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
-import type { ProductEntry } from '@/interfaces/ProductEntry';
+import type { PurchasedProductEntry } from '@/interfaces/ProductEntry';
 
   const props = withDefaults(defineProps<{
     purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface;
@@ -16,12 +16,12 @@ import type { ProductEntry } from '@/interfaces/ProductEntry';
 const purchaseHistoryStore = usePurchaseHistoryStore();
 const showCanceled = ref(false);
 
-const handleCancelProductClick = (historyId: number, productEntry: ProductEntry) => {
+const handleCancelProductClick = (historyId: number, productEntry: PurchasedProductEntry) => {
   if (productEntry.deletedAt !== null) return;
   purchaseHistoryStore.deletePurchased(historyId, productEntry, props.purchaseHistoryRepository);
 };
 
-const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): number => {
+const calcTotalAmount = (productOrders: Array<PurchasedProductEntry>, rate: number): number => {
   return productOrders.filter(productEntry => productEntry.deletedAt === null).reduce((total, productEntry) => {
     return total + convertToYen(productEntry.product.price, rate) * productEntry.quantity;
   }, 0);
@@ -56,16 +56,16 @@ const displayedHistories = computed<Array<PurchaseHistory>>(() => {
       <label><input type="radio" :value="true" v-model="showCanceled">キャンセルした購入商品も含めた購入履歴</label>
     </div>
     <div class="purchase-history-list">
-      <div v-for="purchaseHistory in displayedHistories" :key="purchaseHistory.historyId" class="purchase-history-item">
+      <div v-for="purchaseHistory in displayedHistories" :key="purchaseHistory.id" class="purchase-history-item">
         <p>購入日時: {{ formatDate(purchaseHistory.purchasedAt) }}</p>
         <p>購入商品:</p>
         <ul>
-          <li v-for="productEntry in purchaseHistory.productOrders" :key="productEntry.entryId">
+          <li v-for="productEntry in purchaseHistory.productOrders" :key="productEntry.id">
             <p>商品名:{{ productEntry.product.title }}</p>
             <p>単価:{{ convertToYen(productEntry.product.price, purchaseHistory.rate).toLocaleString() }}円</p>
             <p>購入個数:{{ productEntry.quantity }}個</p>
             <p v-if="productEntry.deletedAt">キャンセル日時:{{ formatDate(productEntry.deletedAt) }}</p>
-            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.historyId, productEntry)">購入キャンセル</button>
+            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.id, productEntry)">購入キャンセル</button>
           </li>
         </ul>
         <div class="border"></div>

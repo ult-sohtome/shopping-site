@@ -12,7 +12,7 @@
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
   import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
   import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
-  import type { ProductEntry } from '@/interfaces/ProductEntry';
+  import type { CartProductEntry } from '@/interfaces/ProductEntry';
 
 
 const props = withDefaults(defineProps<{
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{
   const purchaseHistoryStore = usePurchaseHistoryStore();
   const loading = ref(true);
   const error = ref<string | null>(null);
-  const cartItems = ref<Array<ProductEntry>>([]);
+  const cartItems = ref<Array<CartProductEntry>>([]);
 
   const totalPrice = computed(() => {
     return cartItems.value.reduce((total, item) => {
@@ -67,9 +67,9 @@ const props = withDefaults(defineProps<{
   watch(
     () => [...cartStore.cartItems],
     async newCartStoreItems => {
-      const updatedCartItems: Array<ProductEntry> = [];
+      const updatedCartItems: Array<CartProductEntry> = [];
       for (const storeItem of newCartStoreItems) {
-        const existing: ProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
+        const existing: CartProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
         if (existing) {
           existing.quantity = storeItem.quantity;
           updatedCartItems.push(existing);
@@ -79,7 +79,6 @@ const props = withDefaults(defineProps<{
             throw new Error('カート内の商品情報が得られませんでした。');
           }
           updatedCartItems.push({
-            entryId: storeItem.entryId,
             product: {
               id: product.id,
               title: product.title,

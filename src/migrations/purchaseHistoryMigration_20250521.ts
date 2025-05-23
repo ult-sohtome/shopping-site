@@ -1,6 +1,6 @@
 import { LocalStoragePurchaseHistoryRepository } from "@/repositories/LocalStoragePurchaseHistoryRepository";
 import type { PurchaseHistory } from "@/interfaces/PurchaseHistoryRepositoryInterface";
-import type { ProductEntry } from "@/interfaces/ProductEntry";
+import type { PurchasedProductEntry } from "@/interfaces/ProductEntry";
 
 export class PurchaseHistoryMigration_20250521 {
   constructor() {
@@ -16,14 +16,14 @@ export class PurchaseHistoryMigration_20250521 {
     const purchaseHistories = JSON.parse(localStorageData);
 
     const migratedPurchaseHistories = purchaseHistories.map((purchaseHistory: PurchaseHistory) => {
-      const updatedProductOrders = purchaseHistory.productOrders.map((productEntry: ProductEntry) => ({
+      const updatedProductOrders = purchaseHistory.productOrders.map((productEntry: PurchasedProductEntry) => ({
         ...productEntry,
         deletedAt: null,
-        entryId: purchaseHistory.productOrders.indexOf(productEntry) + 1,
+        id: purchaseHistory.productOrders.indexOf(productEntry) + 1,
       }));
       return {
         ...purchaseHistory,
-        historyId: purchaseHistories.indexOf(purchaseHistory) + 1,
+        id: purchaseHistories.indexOf(purchaseHistory) + 1,
         productOrders: updatedProductOrders
       };
     });

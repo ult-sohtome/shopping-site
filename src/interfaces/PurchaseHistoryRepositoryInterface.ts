@@ -1,8 +1,8 @@
-import type { ProductEntry } from "./ProductEntry";
+import type { PurchasedProductEntry } from "./ProductEntry";
 
 export interface PurchaseHistory {
-  historyId: number,
-  productOrders: Array<ProductEntry>,
+  id: number,
+  productOrders: Array<PurchasedProductEntry>,
   rate: number,
   purchasedAt: string
 }
