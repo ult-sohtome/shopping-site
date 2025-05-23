@@ -18,10 +18,12 @@ export class PurchaseHistoryMigration_20250521 {
     const migratedPurchaseHistories = purchaseHistories.map((purchaseHistory: PurchaseHistory) => {
       const updatedProductOrders = purchaseHistory.productOrders.map((productEntry: ProductEntry) => ({
         ...productEntry,
-        deletedAt: null
+        deletedAt: null,
+        entryId: purchaseHistory.productOrders.indexOf(productEntry) + 1,
       }));
       return {
         ...purchaseHistory,
+        historyId: purchaseHistories.indexOf(purchaseHistory) + 1,
         productOrders: updatedProductOrders
       };
     });

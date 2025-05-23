@@ -16,9 +16,9 @@ import type { ProductEntry } from '@/interfaces/ProductEntry';
 const purchaseHistoryStore = usePurchaseHistoryStore();
 const showCanceled = ref(false);
 
-const handleCancelProductClick = (purchasedAt: string, productEntry: ProductEntry) => {
+const handleCancelProductClick = (historyId: number, productEntry: ProductEntry) => {
   if (productEntry.deletedAt !== null) return;
-  purchaseHistoryStore.deletePurchased(purchasedAt, productEntry, props.purchaseHistoryRepository);
+  purchaseHistoryStore.deletePurchased(historyId, productEntry, props.purchaseHistoryRepository);
 };
 
 const calcTotalAmount = (productOrders: Array<ProductEntry>, rate: number): number => {
@@ -56,16 +56,16 @@ const displayedHistories = computed<Array<PurchaseHistory>>(() => {
       <label><input type="radio" :value="true" v-model="showCanceled">キャンセルした購入商品も含めた購入履歴</label>
     </div>
     <div class="purchase-history-list">
-      <div v-for="(purchaseHistory, historyIndex) in displayedHistories" :key="historyIndex" class="purchase-history-item">
+      <div v-for="purchaseHistory in displayedHistories" :key="purchaseHistory.historyId" class="purchase-history-item">
         <p>購入日時: {{ formatDate(purchaseHistory.purchasedAt) }}</p>
         <p>購入商品:</p>
         <ul>
-          <li v-for="(productEntry, productOrderIndex) in purchaseHistory.productOrders" :key="productOrderIndex">
+          <li v-for="productEntry in purchaseHistory.productOrders" :key="productEntry.entryId">
             <p>商品名:{{ productEntry.product.title }}</p>
             <p>単価:{{ convertToYen(productEntry.product.price, purchaseHistory.rate).toLocaleString() }}円</p>
             <p>購入個数:{{ productEntry.quantity }}個</p>
             <p v-if="productEntry.deletedAt">キャンセル日時:{{ formatDate(productEntry.deletedAt) }}</p>
-            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.purchasedAt, productEntry)">購入キャンセル</button>
+            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.historyId, productEntry)">購入キャンセル</button>
           </li>
         </ul>
         <div class="border"></div>

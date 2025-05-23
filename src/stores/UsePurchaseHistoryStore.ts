@@ -14,8 +14,11 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
   actions: {
     addPurchaseHistory(product: Product, rate: number, repository: PurchaseHistoryRepositoryInterface) {
       const purchaseProduct: PurchaseHistory = {
+        historyId: this.purchaseHistories.length + 1,
         productOrders: [
-          { product: {
+          { 
+            entryId: 1,
+            product: {
               id: product.id,
               title: product.title,
               price: product.price,
@@ -36,7 +39,9 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
     },
     addPurchareHistoryFromCart(cartItems: Array<ProductEntry>, rate: number, repository: PurchaseHistoryRepositoryInterface) {
       const purchaseProduct: PurchaseHistory = {
+        historyId: this.purchaseHistories.length + 1,
         productOrders: cartItems.map(item => ({
+          entryId: cartItems.indexOf(item) + 1,
           product: item.product,
           quantity: item.quantity,
           deletedAt: null
@@ -51,18 +56,14 @@ export const usePurchaseHistoryStore = defineStore("purchaseHistories", {
     initializePurchaseHistory(purchaseHistories: Array<PurchaseHistory>) {
       this.purchaseHistories = purchaseHistories;
     },
-    deletePurchased(purchasedAt: string, productEntry: ProductEntry, repository: PurchaseHistoryRepositoryInterface) {
-      const targetPurchaseHistory = this.purchaseHistories.find(purchaseHistory => purchaseHistory.purchasedAt === purchasedAt);
+    deletePurchased(historyId: number, productEntry: ProductEntry, repository: PurchaseHistoryRepositoryInterface) {
+      const targetPurchaseHistory = this.purchaseHistories.find(purchaseHistory => purchaseHistory.historyId === historyId);
 
       if (!targetPurchaseHistory) {
         throw new Error("指定された商品の購入履歴が見つかりませんでした");
       }
 
-      const targetProductEntry = targetPurchaseHistory.productOrders.find(entry =>
-        entry.product.id === productEntry.product.id &&
-        entry.quantity === productEntry.quantity &&
-        entry.deletedAt === null
-      );
+      const targetProductEntry = targetPurchaseHistory.productOrders.find(entry => entry.entryId === productEntry.entryId);
 
       if (!targetProductEntry) {
         throw new Error("キャンセルする商品が見つかりませんでした");

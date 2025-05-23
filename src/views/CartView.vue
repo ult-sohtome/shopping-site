@@ -79,6 +79,7 @@ const props = withDefaults(defineProps<{
             throw new Error('カート内の商品情報が得られませんでした。');
           }
           updatedCartItems.push({
+            entryId: storeItem.entryId,
             product: {
               id: product.id,
               title: product.title,

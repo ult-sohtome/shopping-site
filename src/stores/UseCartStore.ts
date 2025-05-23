@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 
 type State = {
-  cartItems: Array<{ productId: number, quantity: number }>;
+  cartItems: Array<{ entryId: number, productId: number, quantity: number }>;
 };
 
 export const useCartStore = defineStore('cart', {
@@ -14,7 +14,8 @@ export const useCartStore = defineStore('cart', {
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        this.cartItems.push({ productId, quantity: 1 });
+        const entryId: number = this.cartItems.length > 0 ? this.cartItems[this.cartItems.length - 1].entryId + 1 : 1;
+        this.cartItems.push({ entryId, productId, quantity: 1 });
       }
     },
     removeProductFromCart(productId: number) {

@@ -1,6 +1,7 @@
 import type { ProductEntry } from "./ProductEntry";
 
 export interface PurchaseHistory {
+  historyId: number,
   productOrders: Array<ProductEntry>,
   rate: number,
   purchasedAt: string
