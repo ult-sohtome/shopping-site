@@ -4,13 +4,17 @@ export class LocalStoragePurchaseHistoryRepository implements PurchaseHistoryRep
   private readonly storageKey = 'purchaseHistories';
 
   addPurchaseHistory(purchaseProduct: PurchaseHistory): void {
-    const purchaseHistory: Array<PurchaseHistory> = this.getPurchaseHistory();
-    purchaseHistory.push(purchaseProduct);
-    localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistory));
+    const purchaseHistories: Array<PurchaseHistory> = this.getPurchaseHistories();
+    purchaseHistories.push(purchaseProduct);
+    localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistories));
   }
 
-  getPurchaseHistory(): Array<PurchaseHistory> {
-    const history: string | null = localStorage.getItem(this.storageKey);
-    return history ? JSON.parse(history) : [];
+  getPurchaseHistories(): Array<PurchaseHistory> {
+    const histories: string | null = localStorage.getItem(this.storageKey);
+    return histories ? JSON.parse(histories) : [];
+  }
+
+  updatePurchaseHistories(purchaseHistories: Array<PurchaseHistory>) {
+    localStorage.setItem(this.storageKey, JSON.stringify(purchaseHistories));
   }
 }

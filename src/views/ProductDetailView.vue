@@ -55,8 +55,10 @@
     cartStore.addProductToCart(product.id);
     showCartToast("カートに追加しました", event.clientX, event.clientY);
   }
-  const handleBuyProductClick = (product: Product) => {
+  const handleBuyProductClick = (product: Product | null, event: MouseEvent) => {
+    if (!product) return;
     purchaseHistoryStore.addPurchaseHistory(product, rate.value, props.purchaseHistoryRepository);
+    showCartToast("購入しました", event.clientX, event.clientY);
   }
 
   onMounted(async () => {
@@ -118,7 +120,7 @@
       <br />
       <div>
         <button @click="event => handleAddProductToCartClick(product, event)">カートに追加</button>
-        <button @click="handleBuyProductClick(product)">購入</button>
+        <button @click="event => handleBuyProductClick(product, event)">購入</button>
       </div>
     </div>
     <div v-else class="message">商品が見つかりませんでした。</div>

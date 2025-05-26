@@ -1,6 +1,10 @@
 import type { Product } from "./ProductRepositoryInterface";
 
-export interface ProductEntry {
+export interface PurchasedProductEntry {
+  id: number,
   product: Product,
-  quantity: number
+  quantity: number,
+  deletedAt: string | null
 }
+
+export type CartProductEntry = Omit<PurchasedProductEntry, "id">;
