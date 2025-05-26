@@ -1,19 +1,18 @@
 <script setup lang="ts">
-  import { ref, onMounted, computed, watch } from 'vue';
-  import { ApiRateRepository } from '@/repositories/ApiRateRepository';
-  import { ApiTranslateRepository } from '@/repositories/ApiTranslateRepository';
-  import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
-  import { useRateStore } from '@/stores/UseRateStore';
-  import { convertToYen } from '@/utils/priceFormatter';
-  import { useCartStore } from '@/stores/UseCartStore';
-  import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
+import { ref, onMounted, computed, watch } from 'vue';
+import { ApiRateRepository } from '@/repositories/ApiRateRepository';
+import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
+import { useRateStore } from '@/stores/UseRateStore';
+import { convertToYen } from '@/utils/priceFormatter';
+import { useCartStore } from '@/stores/UseCartStore';
+import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
 import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
 import type { Product } from '@/interfaces/ProductRepositoryInterface';
-  import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
-  import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
-  import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
-  import type { CartProductEntry } from '@/interfaces/ProductEntry';
-
+import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
+import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
+import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
+import type { CartProductEntry } from '@/interfaces/ProductEntry';
+import { createTranslateRepository } from '@/factories/translateRepositoryFactory';
 
 const props = withDefaults(defineProps<{
     rateRepository?: RateRepositoryInterface;
@@ -22,7 +21,7 @@ const props = withDefaults(defineProps<{
   }>(), {
     rateRepository: () => new ApiRateRepository(),
     purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
-    translateRepository: () => new ApiTranslateRepository(),
+    translateRepository: () => createTranslateRepository(),
   });
 
   const productRepositoryStore = useProductRepositoryStore();
@@ -52,33 +51,33 @@ const props = withDefaults(defineProps<{
 
   const updateCartItems = async () => {
     const newCartStoreItems = [...cartStore.cartItems];
-      const updatedCartItems: Array<CartProductEntry> = [];
+    const updatedCartItems: Array<CartProductEntry> = [];
 
-      for (const storeItem of newCartStoreItems) {
-        const existing: CartProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
-        if (existing) {
-          existing.quantity = storeItem.quantity;
-          updatedCartItems.push(existing);
-        } else {
+    for (const storeItem of newCartStoreItems) {
+      const existing: CartProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
+      if (existing) {
+        existing.quantity = storeItem.quantity;
+        updatedCartItems.push(existing);
+      } else {
         const product: Product | null = await productRepositoryStore.productRepository.getProductById(storeItem.productId);
-          if (product === null) {
-            throw new Error('カート内の商品情報が得られませんでした。');
-          }
-          updatedCartItems.push({
-            product: {
-              id: product.id,
-              title: product.title,
-              price: product.price,
-              description: product.description,
-              category: product.category,
-              image: product.image
-            },
-            quantity: storeItem.quantity,
-            deletedAt: null
-          });
+        if (product === null) {
+          throw new Error('カート内の商品情報が得られませんでした。');
         }
+        updatedCartItems.push({
+          product: {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            description: product.description,
+            category: product.category,
+            image: product.image
+          },
+          quantity: storeItem.quantity,
+          deletedAt: null
+        });
       }
-      cartItems.value = updatedCartItems;
+    }
+    cartItems.value = updatedCartItems;
   }
 
   onMounted(async () => {

@@ -1,4 +1,3 @@
-// src/factories/translateRepositoryFactory.ts
 import { ApiTranslateRepository } from '@/repositories/ApiTranslateRepository';
 import { StubTranslateRepository } from '@/repositories/StubTranslateRepository';
 import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
