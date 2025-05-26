@@ -4,6 +4,7 @@ import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStora
 import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
 import { convertToYen } from '@/utils/priceFormatter';
 import { formatDate } from '@/utils/dateFormatter';
+import PurchasedEntry from '@/components/PurchasedEntry.vue';
 import type { PurchaseHistory, PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
 import type { PurchasedProductEntry } from '@/interfaces/ProductEntry';
 
@@ -61,11 +62,11 @@ const displayedHistories = computed<Array<PurchaseHistory>>(() => {
         <p>購入商品:</p>
         <ul>
           <li v-for="productEntry in purchaseHistory.productOrders" :key="productEntry.id">
-            <p>商品名:{{ productEntry.product.title }}</p>
-            <p>単価:{{ convertToYen(productEntry.product.price, purchaseHistory.rate).toLocaleString() }}円</p>
-            <p>購入個数:{{ productEntry.quantity }}個</p>
-            <p v-if="productEntry.deletedAt">キャンセル日時:{{ formatDate(productEntry.deletedAt) }}</p>
-            <button v-if="productEntry.deletedAt === null" @click="handleCancelProductClick(purchaseHistory.id, productEntry)">購入キャンセル</button>
+            <PurchasedEntry
+              :productEntry="productEntry"
+              :purchaseHistory="purchaseHistory"
+              @cancelProduct="handleCancelProductClick"
+            />
           </li>
         </ul>
         <div class="border"></div>
