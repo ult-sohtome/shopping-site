@@ -22,9 +22,9 @@ const canceledAt = computed(() =>
   props.productEntry.deletedAt ? formatDate(props.productEntry.deletedAt) : ''
 );
 
-const handleCancelProductClick = (historyId: number, productEntry: PurchasedProductEntry) => {
+const handleCancelProductClick = () => {
   if (isDeleted.value) return;
-  emit('cancelProduct', historyId, productEntry);
+  emit('cancelProduct', props.purchaseHistory.id, props.productEntry);
 };
 </script>
 
@@ -33,5 +33,5 @@ const handleCancelProductClick = (historyId: number, productEntry: PurchasedProd
   <p>単価:{{ unitPrice }}円</p>
   <p>購入個数:{{ productEntry.quantity }}個</p>
   <p v-if="isDeleted">キャンセル日時:{{ canceledAt }}</p>
-  <button v-if="!isDeleted" @click="handleCancelProductClick(purchaseHistory.id, productEntry)">購入キャンセル</button>
+  <button v-if="!isDeleted" @click="handleCancelProductClick()">購入キャンセル</button>
 </template>
