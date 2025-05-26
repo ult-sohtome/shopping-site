@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
+import { ref, onMounted, watch } from 'vue';
+import type { Product } from '@/interfaces/ProductRepositoryInterface';
 import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
-import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { convertToYen } from '@/utils/priceFormatter';
 import { useRouter } from 'vue-router';
 import { ApiRateRepository } from '@/repositories/ApiRateRepository';
 import { useRateStore } from '@/stores/UseRateStore';
+import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
 
 const props = withDefaults(defineProps<{
-  productRepository?: ProductRepositoryInterface;
   rateRepository?: RateRepositoryInterface;
 }>(), {
-  productRepository: () => new ApiProductRepository(),
   rateRepository: () => new ApiRateRepository()
 });
 
+const productRepositoryStore = useProductRepositoryStore();
 const products = ref<Product[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -27,21 +26,27 @@ const handleDetailClick = (productId: number) => {
   router.push(`/product/${productId}`);
 }
 
-onMounted(async () => {
+const fetchProducts = async () => {
+  loading.value = true;
+  error.value = null;
   try {
     await rateStore.initializeRate(props.rateRepository);
     if (rateStore.jpyRate === null) {
       throw new Error('JPYレートが取得できませんでした。');
     }
     rate.value = rateStore.jpyRate;
-    const response = await props.productRepository.getAllProducts();
+    const response = await productRepositoryStore.productRepository.getAllProducts();
     products.value = response;
   } catch (e: any) {
     error.value = e.message;
   } finally {
     loading.value = false;
   }
-})
+};
+
+onMounted(fetchProducts);
+
+watch(() => productRepositoryStore.productRepository, fetchProducts);
 </script>
 
 <template>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { ref, onMounted, computed, watch } from 'vue';
-  import { ApiProductRepository } from '@/repositories/ApiProductRepository';
   import { ApiRateRepository } from '@/repositories/ApiRateRepository';
   import { ApiTranslateRepository } from '@/repositories/ApiTranslateRepository';
   import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
@@ -8,7 +7,8 @@
   import { convertToYen } from '@/utils/priceFormatter';
   import { useCartStore } from '@/stores/UseCartStore';
   import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
-  import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
+import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
+import type { Product } from '@/interfaces/ProductRepositoryInterface';
   import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
   import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
   import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
@@ -16,17 +16,16 @@
 
 
 const props = withDefaults(defineProps<{
-    productRepository?: ProductRepositoryInterface;
     rateRepository?: RateRepositoryInterface;
     purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface;
     translateRepository?: TranslateRepositoryInterface;
   }>(), {
-    productRepository: () => new ApiProductRepository(),
     rateRepository: () => new ApiRateRepository(),
     purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
     translateRepository: () => new ApiTranslateRepository(),
   });
 
+  const productRepositoryStore = useProductRepositoryStore();
   const rateStore = useRateStore();
   const cartStore = useCartStore();
   const purchaseHistoryStore = usePurchaseHistoryStore();
@@ -51,30 +50,17 @@ const props = withDefaults(defineProps<{
     cartItems.value = [];
   }
 
-  onMounted(async () => {
-    try {
-      await rateStore.initializeRate(props.rateRepository);
-      if (rateStore.jpyRate === null) {
-        throw new Error('JPYレートが取得できませんでした。');
-      }
-    } catch (e: any) {
-      error.value = e.message;
-    } finally {
-      loading.value = false;
-    }
-  });
-
-  watch(
-    () => [...cartStore.cartItems],
-    async newCartStoreItems => {
+  const updateCartItems = async () => {
+    const newCartStoreItems = [...cartStore.cartItems];
       const updatedCartItems: Array<CartProductEntry> = [];
+
       for (const storeItem of newCartStoreItems) {
         const existing: CartProductEntry | undefined = cartItems.value.find(cartItem => cartItem.product.id === storeItem.productId);
         if (existing) {
           existing.quantity = storeItem.quantity;
           updatedCartItems.push(existing);
         } else {
-          const product: Product | null = await props.productRepository.getProductById(storeItem.productId);
+        const product: Product | null = await productRepositoryStore.productRepository.getProductById(storeItem.productId);
           if (product === null) {
             throw new Error('カート内の商品情報が得られませんでした。');
           }
@@ -93,9 +79,23 @@ const props = withDefaults(defineProps<{
         }
       }
       cartItems.value = updatedCartItems;
-    },
-    {immediate: true, deep: true}
-  );
+  }
+
+  onMounted(async () => {
+    try {
+      await rateStore.initializeRate(props.rateRepository);
+      if (rateStore.jpyRate === null) {
+        throw new Error('JPYレートが取得できませんでした。');
+      }
+    } catch (e: any) {
+      error.value = e.message;
+    } finally {
+      loading.value = false;
+    }
+  });
+
+  watch(() => [...cartStore.cartItems],updateCartItems,{immediate: true, deep: true});
+  watch(() => productRepositoryStore.productRepository, updateCartItems);
 </script>
 
 <template>
