@@ -8,6 +8,7 @@ import { ApiRateRepository } from '@/repositories/ApiRateRepository';
 import { useRateStore } from '@/stores/UseRateStore';
 import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
 import { useCartStore } from '@/stores/UseCartStore';
+import ConfirmDialog from '@/components/commom/ConfirmDialog.vue';
 
 const props = withDefaults(defineProps<{
   rateRepository?: RateRepositoryInterface;
@@ -23,6 +24,7 @@ const error = ref<string | null>(null);
 const router = useRouter();
 const rateStore = useRateStore();
 const rate = ref<number>(0);
+const showConfirmDialog = ref(false);
 
 const handleDetailClick = (productId: number) => {
   router.push(`/product/${productId}`);
@@ -46,12 +48,19 @@ const fetchProducts = async () => {
   }
 };
 
-const switchProductRepository = () => {
-  if(confirm("カート内の商品は全て削除されます。切り替えを実行しますか？")) {
-    cartStore.clearCart();
-    productRepositoryStore.toggleProductRepository();
-    fetchProducts();
-  }
+const handleShowConfirmDialog = () => {
+  showConfirmDialog.value = true;
+};
+
+const executeRepositorySwitch = () => {
+  showConfirmDialog.value = false;
+  cartStore.clearCart();
+  productRepositoryStore.toggleProductRepository();
+  fetchProducts();
+};
+
+const cancelRepositorySwitch = () => {
+  showConfirmDialog.value = false;
 };
 
 onMounted(fetchProducts);
@@ -59,7 +68,7 @@ onMounted(fetchProducts);
 
 <template>
   <header>
-    <button @click="switchProductRepository">
+    <button @click="handleShowConfirmDialog">
       {{ productRepositoryStore.isUseStub ? '本番商品APIに切り替え' : '商品スタブに切り替え' }}
     </button>
   </header>
@@ -75,6 +84,13 @@ onMounted(fetchProducts);
         <button @click="handleDetailClick(product.id)">詳細を見る</button>
       </div>
     </div>
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      :isDialogVisible="showConfirmDialog"
+      dialogMessage="カート内の商品は全て削除されます。切り替えを実行しますか？"
+      @confirm="executeRepositorySwitch"
+      @cancel="cancelRepositorySwitch"
+    />
   </main>
 </template>
 
