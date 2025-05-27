@@ -86,6 +86,7 @@ const props = withDefaults(defineProps<{
       if (rateStore.jpyRate === null) {
         throw new Error('JPYレートが取得できませんでした。');
       }
+      await updateCartItems();
     } catch (e: any) {
       error.value = e.message;
     } finally {
