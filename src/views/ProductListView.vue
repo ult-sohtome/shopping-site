@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Product } from '@/interfaces/ProductRepositoryInterface';
 import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
 import { convertToYen } from '@/utils/priceFormatter';

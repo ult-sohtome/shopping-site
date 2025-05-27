@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 
 export const useProductRepositoryStore = defineStore('ProductRepository', () => {
   const isUseStub = ref(import.meta.env.VITE_DEFAULT_USE_PRODUCT_STUB === 'true');
-  const productRepository = computed(() => createProductRepository());
+  const productRepository = computed(() => createProductRepository(isUseStub.value));
 
   const toggleProductRepository = () => isUseStub.value = !isUseStub.value;
 

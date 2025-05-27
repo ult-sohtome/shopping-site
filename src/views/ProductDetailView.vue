@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ApiRateRepository } from '@/repositories/ApiRateRepository';
 import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
 import { createTranslateRepository } from '@/factories/translateRepositoryFactory'
