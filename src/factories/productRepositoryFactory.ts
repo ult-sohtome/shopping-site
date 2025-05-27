@@ -1,10 +1,12 @@
 import { ApiProductRepository } from '@/repositories/ApiProductRepository';
 import { StubProductRepository } from '@/repositories/StubProductRepository';
 import type { ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
+import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
 
 export function createProductRepository(): ProductRepositoryInterface {
-  const isUseStub: boolean = import.meta.env.VITE_USE_PRODUCT_STUB === 'true';
-  return isUseStub
+  const productRepositoryStore = useProductRepositoryStore();
+
+  return productRepositoryStore.isUseStub
     ? new StubProductRepository()
     : new ApiProductRepository();
 }

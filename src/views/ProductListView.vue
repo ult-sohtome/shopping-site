@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router';
 import { ApiRateRepository } from '@/repositories/ApiRateRepository';
 import { useRateStore } from '@/stores/UseRateStore';
 import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
+import { useCartStore } from '@/stores/UseCartStore';
 
 const props = withDefaults(defineProps<{
   rateRepository?: RateRepositoryInterface;
@@ -14,6 +15,7 @@ const props = withDefaults(defineProps<{
   rateRepository: () => new ApiRateRepository()
 });
 
+const cartStore = useCartStore();
 const productRepositoryStore = useProductRepositoryStore();
 const products = ref<Product[]>([]);
 const loading = ref(true);
@@ -44,12 +46,23 @@ const fetchProducts = async () => {
   }
 };
 
-onMounted(fetchProducts);
+const switchProductRepository = () => {
+  if(confirm("カート内の商品は全て削除されます。切り替えを実行しますか？")) {
+    cartStore.clearCart();
+    productRepositoryStore.toggleProductRepository();
+    fetchProducts();
+  }
+};
 
-watch(() => productRepositoryStore.productRepository, fetchProducts);
+onMounted(fetchProducts);
 </script>
 
 <template>
+  <header>
+    <button @click="switchProductRepository">
+      {{ productRepositoryStore.isUseStub ? '本番商品APIに切り替え' : '商品スタブに切り替え' }}
+    </button>
+  </header>
   <main>
     <h1>商品一覧</h1>
     <div v-if="loading" class="message">商品データ読み込み中...</div>

@@ -93,8 +93,7 @@ const props = withDefaults(defineProps<{
     }
   });
 
-  watch(() => [...cartStore.cartItems],updateCartItems,{immediate: true, deep: true});
-  watch(() => productRepositoryStore.productRepository, updateCartItems);
+  watch(() => [...cartStore.cartItems],updateCartItems,{immediate: false, deep: true});
 </script>
 
 <template>

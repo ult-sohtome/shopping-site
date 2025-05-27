@@ -4,7 +4,6 @@ import { onMounted } from 'vue'
 import type { PurchaseHistoryRepositoryInterface } from './interfaces/PurchaseHistoryRepositoryInterface'
 import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository'
 import { usePurchaseHistoryStore } from './stores/UsePurchaseHistoryStore'
-import { useProductRepositoryStore } from './stores/UseProductRepositoryStore'
 import { runMigrations } from './migrations/runMigrations'
 
 const props = withDefaults(defineProps<{
@@ -14,7 +13,6 @@ const props = withDefaults(defineProps<{
 });
 
 const purchaseHistoryStore = usePurchaseHistoryStore();
-const repositoryStore = useProductRepositoryStore();
 
 onMounted(() => {
   runMigrations(props.purchaseHistoryRepository);
@@ -31,9 +29,6 @@ onMounted(() => {
         <RouterLink to="/purchase-history">購入履歴</RouterLink>
       </nav>
     </div>
-    <button @click="repositoryStore.toggleProductRepository">
-      {{ repositoryStore.isUseStub ? '本番商品APIに切り替え' : '商品スタブに切り替え' }}
-    </button>
   </header>
 
   <RouterView />

@@ -98,8 +98,6 @@ import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
   };
 
   onMounted(fetchProductDetail);
-
-  watch(productRepositoryStore.productRepository, fetchProductDetail);
 </script>
 
 <template>
