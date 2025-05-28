@@ -1,32 +1,31 @@
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
-  import { ApiProductRepository } from '@/repositories/ApiProductRepository';
-  import { ApiRateRepository } from '@/repositories/ApiRateRepository';
-  import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
-  import { createTranslateRepository } from '@/factories/translateRepositoryFactory'
-  import { useRateStore } from '@/stores/UseRateStore';
-  import{ useRoute } from 'vue-router';
-  import { convertToYen } from '@/utils/priceFormatter';
-  import { useCartStore } from '@/stores/UseCartStore';
-  import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
-  import Toast from '@/components/commom/Toast.vue';
-  import type { Product, ProductRepositoryInterface } from '@/interfaces/ProductRepositoryInterface';
-  import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
-  import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
-  import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
+import { ref, onMounted } from 'vue';
+import { ApiRateRepository } from '@/repositories/ApiRateRepository';
+import { LocalStoragePurchaseHistoryRepository } from '@/repositories/LocalStoragePurchaseHistoryRepository';
+import { createTranslateRepository } from '@/factories/translateRepositoryFactory'
+import { useRateStore } from '@/stores/UseRateStore';
+import{ useRoute } from 'vue-router';
+import { convertToYen } from '@/utils/priceFormatter';
+import { useCartStore } from '@/stores/UseCartStore';
+import { usePurchaseHistoryStore } from '@/stores/UsePurchaseHistoryStore';
+import Toast from '@/components/commom/Toast.vue';
+import type { Product } from '@/interfaces/ProductRepositoryInterface';
+import type { RateRepositoryInterface } from '@/interfaces/RateRepositoryInterface';
+import type { PurchaseHistoryRepositoryInterface } from '@/interfaces/PurchaseHistoryRepositoryInterface';
+import type { TranslateRepositoryInterface } from '@/interfaces/TranslateRepositoryInterface';
+import { useProductRepositoryStore } from '@/stores/UseProductRepositoryStore';
 
   const props = withDefaults(defineProps<{
-    productRepository?: ProductRepositoryInterface;
     rateRepository?: RateRepositoryInterface;
     purchaseHistoryRepository?: PurchaseHistoryRepositoryInterface;
     translateRepository?: TranslateRepositoryInterface;
   }>(), {
-    productRepository: () => new ApiProductRepository(),
     rateRepository: () => new ApiRateRepository(),
     purchaseHistoryRepository: () => new LocalStoragePurchaseHistoryRepository(),
     translateRepository: () => createTranslateRepository(),
   });
 
+  const productRepositoryStore = useProductRepositoryStore();
   const route = useRoute();
   const product = ref<Product | null>(null);
   const loading = ref(true);
@@ -61,7 +60,9 @@
     showCartToast("購入しました", event.clientX, event.clientY);
   }
 
-  onMounted(async () => {
+  const fetchProductDetail = async () => {
+    loading.value = true;
+    error.value = null;
     try {
       await rateStore.initializeRate(props.rateRepository);
       if (rateStore.jpyRate === null) {
@@ -69,7 +70,7 @@
       }
       rate.value = rateStore.jpyRate;
       const productId = Number(route.params.id);
-      product.value = await props.productRepository.getProductById(productId);
+      product.value = await productRepositoryStore.productRepository.getProductById(productId);
       if (product.value === null) {
         throw new Error('商品が見つかりませんでした。');
       }
@@ -94,7 +95,9 @@
     } finally {
       loading.value = false;
     }
-  });
+  };
+
+  onMounted(fetchProductDetail);
 </script>
 
 <template>
